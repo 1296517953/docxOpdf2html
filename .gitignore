@@ -1,0 +1,20 @@
+# Build artifacts
+build/
+dist/
+result/
+*.spec
+__pycache__/
+*.pyc
+
+# IDE
+.claude/
+.idea/
+.vscode/
+
+# Test artifacts
+test_files/
+!test_files/.gitkeep
+
+# OS
+Thumbs.db
+Desktop.ini
