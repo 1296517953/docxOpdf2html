@@ -17,7 +17,7 @@ from typing import Optional, Tuple
 def detect_format(filepath: Path) -> str:
     """根据文件扩展名（忽略大小写）返回格式标识：'pdf' / 'docx'。"""
     ext = filepath.suffix.lower()
-    mapping = {".pdf": "pdf", ".docx": "docx"}
+    mapping = {".pdf": "pdf", ".docx": "docx", ".doc": "doc"}
     if ext not in mapping:
         raise ValueError(f"不支持的文件格式: {ext}")
     return mapping[ext]

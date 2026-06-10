@@ -18,17 +18,18 @@ from tkinter import Tk, Frame, Label, Button, Entry, StringVar, ttk
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 
-from converter import detect_format, PdfConverter, DocxConverter
+from converter import detect_format, PdfConverter, DocxConverter, DocConverter
 
 # ── 格式 → 转换器映射 ──────────────────────────────────────────────
 _CONVERTERS = {
     "pdf":  PdfConverter,
     "docx": DocxConverter,
+    "doc":  DocConverter,
 }
 _EXT_FILTER = [
-    ("支持的文件", "*.pdf *.docx"),
+    ("支持的文件", "*.pdf *.docx *.doc"),
     ("PDF", "*.pdf"),
-    ("Word 文档", "*.docx"),
+    ("Word 文档", "*.docx;*.doc"),
 ]
 
 # ── tkinterdnd2 可选导入 ──────────────────────────────────────────

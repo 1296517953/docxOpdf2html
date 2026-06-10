@@ -10,12 +10,13 @@ import sys
 import webbrowser
 from pathlib import Path
 
-from converter import detect_format, PdfConverter, DocxConverter
+from converter import detect_format, PdfConverter, DocxConverter, DocConverter
 
 # 文件扩展名 → 转换器类的映射表
 _CONVERTERS = {
     "pdf": PdfConverter,
     "docx": DocxConverter,
+    "doc": DocConverter,
 }
 
 

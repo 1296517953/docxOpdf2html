@@ -2,6 +2,7 @@
 
 from .pdf_converter import PdfConverter
 from .docx_converter import DocxConverter
+from .doc_converter import DocConverter
 from .utils import detect_format
 
-__all__ = ["PdfConverter", "DocxConverter", "detect_format"]
+__all__ = ["PdfConverter", "DocxConverter", "DocConverter", "detect_format"]
