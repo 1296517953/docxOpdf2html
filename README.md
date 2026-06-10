@@ -1,4 +1,6 @@
-# htmlGENERATOR
+# htmlGENERATOR [ARCHIVED]
+
+> ⚠️ **本项目已封存，不再维护。** 详见 [中文说明](#中文说明) 底部。
 
 **PDF / DOCX → self-contained HTML converter with near-zero formatting loss.**
 
@@ -302,3 +304,13 @@ powershell -ExecutionPolicy Bypass -File build.ps1  # 打包 exe（~41 MB）
 ```
 
 仅修改 `gui_app.py` 后才需重新打包。
+
+---
+
+## 封存说明
+
+本项目（htmlGENERATOR）自 2026 年 6 月起封存，不再接收功能更新或维护。
+
+- 源代码保留在 [GitHub](https://github.com/1296517953/docxOpdf2html) 供参考
+- `result/htmlGENERATOR.exe` 为最后一个可用版本（PDF / DOCX → HTML）
+- 如需扩展，可 fork 后自行开发
