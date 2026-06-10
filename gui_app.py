@@ -18,18 +18,17 @@ from tkinter import Tk, Frame, Label, Button, Entry, StringVar, ttk
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 
-from converter import detect_format, PdfConverter, DocxConverter, DocConverter
+from converter import detect_format, PdfConverter, DocxConverter
 
 # ── 格式 → 转换器映射 ──────────────────────────────────────────────
 _CONVERTERS = {
     "pdf":  PdfConverter,
     "docx": DocxConverter,
-    "doc":  DocConverter,
 }
 _EXT_FILTER = [
-    ("支持的文件", "*.pdf *.docx *.doc"),
+    ("支持的文件", "*.pdf *.docx"),
     ("PDF", "*.pdf"),
-    ("Word 文档", "*.docx;*.doc"),
+    ("Word 文档", "*.docx"),
 ]
 
 # ── tkinterdnd2 可选导入 ──────────────────────────────────────────
@@ -226,7 +225,15 @@ class App:
         try:
             fmt = detect_format(input_path)
         except ValueError:
-            messagebox.showwarning("不支持", f"不支持的文件格式: {input_path.suffix}")
+            if input_path.suffix.lower() == ".doc":
+                messagebox.showinfo(
+                    "提示",
+                    "不支持旧版 .doc 格式。\n\n"
+                    "请先用 Word / WPS 打开该文件，\n"
+                    "另存为 .docx 格式后再拖入转换。"
+                )
+            else:
+                messagebox.showwarning("不支持", f"不支持的文件格式: {input_path.suffix}")
             return
 
         self.var_input.set(str(input_path))
