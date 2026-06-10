@@ -1,21 +1,17 @@
-# Build artifacts
-build/
-dist/
-result/
-*.spec
-__pycache__/
-*.pyc
+# pandoc output
+content/
+!content/.gitkeep
 
-# IDE
-.claude/
-.idea/
-.vscode/
+# honkit build output
+output/
+_book/
 
-# Test artifacts
-test_files/
-!test_files/.gitkeep
+# extracted media
+media/
+
+# node
+node_modules/
 
 # OS
 Thumbs.db
 Desktop.ini
-result.rar

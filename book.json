@@ -1,0 +1,20 @@
+{
+  "title": "文档中心",
+  "description": "由 pandoc + gitbook 自动生成",
+  "language": "zh-hans",
+  "direction": "ltr",
+  "structure": {
+    "readme": "README.md",
+    "summary": "SUMMARY.md"
+  },
+  "plugins": [
+    "search",
+    "expandable-chapters",
+    "copy-code-button"
+  ],
+  "pluginsConfig": {
+    "theme-default": {
+      "showLevel": true
+    }
+  }
+}

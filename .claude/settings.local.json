@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(pip install python-docx python-pptx Jinja2 Pillow lxml 2>&1)",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR; \\(Get-Content test_files/test_docx_all.html -Raw\\) -match 'docx-list' | Out-Null; if \\($?\\) { \"Lists found\" } else { \"No lists\" }; \\(Get-Content test_files/test_docx_all.html -Raw\\) -match 'math-block' | Out-Null; if \\($?\\) { \"Math block found\" } else { \"No math block\" }; \\(Get-Content test_files/test_docx_all.html -Raw\\) -match '<p style=' | Out-Null; if \\($?\\) { \"Has inline paragraph styles\" } else { \"No inline p styles\" }; \\(Get-Content test_files/test_docx_all.html -Raw\\) -match '<?xml' | Out-Null; if \\($?\\) { \"HAS XML DECL \\(BUG\\)\" } else { \"NO XML DECL \\(fixed\\)\" })",
+      "PowerShell(pip install tkinterdnd2)",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR; Copy-Item -Recurse -Force templates dist\\\\; Copy-Item README.md dist\\\\; $size = \\(Get-Item dist/htmlGENERATOR.exe\\).Length / 1MB; Write-Host \"exe: $\\([math]::Round\\($size, 0\\)\\) MB\"; Get-ChildItem dist -Recurse -Name)",
+      "PowerShell(python --version)",
+      "PowerShell(python -c \"import sys; print\\(f'Windows: {sys.getwindowsversion\\(\\).major}.{sys.getwindowsversion\\(\\).minor}'\\)\")",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR\\\\result; $p = Start-Process -FilePath \".\\\\htmlGENERATOR.exe\" -PassThru -WindowStyle Minimized; Start-Sleep -Seconds 5; if \\($p.HasExited\\) { Write-Host \"CRASHED - exit code: $\\($p.ExitCode\\)\"; $p | Select-Object ExitCode, ExitTime } else { Write-Host \"RUNNING - process is alive \\(no crash\\)\"; $p | Select-Object Id, StartTime; Stop-Process $p.Id -Force }; Write-Host \"exe size: $\\([math]::Round\\(\\(Get-Item htmlGENERATOR.exe\\).Length/1MB, 0\\)\\) MB\")",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR; python main.py test_files\\\\test_docx_all.docx -o result\\\\test_output.html 2>&1; if \\($LASTEXITCODE -eq 0\\) { $size = \\(Get-Item result\\\\test_output.html\\).Length; Write-Host \"DOCX conversion OK - $\\([math]::Round\\($size/1024,1\\)\\) KB\" } else { Write-Host \"FAILED\" })",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR; python main.py test_files\\\\test_pptx.pptx -o result\\\\test_ppt_output.html 2>&1; if \\($LASTEXITCODE -eq 0\\) { $size = \\(Get-Item result\\\\test_ppt_output.html\\).Length; Write-Host \"PPTX conversion OK - $\\([math]::Round\\($size/1024,1\\)\\) KB\" } else { Write-Host \"FAILED\" })",
+      "WebSearch",
+      "PowerShell(pip install PyMuPDF)",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR; python main.py test_files\\\\test_pdf.pdf -o test_files\\\\test_pdf_output.html 2>&1; if \\($LASTEXITCODE -eq 0\\) { $size = \\(Get-Item test_files\\\\test_pdf_output.html\\).Length; Write-Host \"PDF conversion OK - $\\([math]::Round\\($size/1024,1\\)\\) KB\"; \\(Get-Content test_files\\\\test_pdf_output.html -Raw\\) -match 'pdf-page' | Out-Null; Write-Host \"pdf-page sections: $\\($Matches[0]\\)\"; \\(Get-Content test_files\\\\test_pdf_output.html -Raw\\) -match 'position:absolute' | Out-Null; Write-Host \"positioned text: $\\($Matches[0]\\)\" } else { Write-Host \"FAILED\" })",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR; $src = \"ZetaADC_V2.1.0操作手册.docx\"; Write-Host \"Source: $src \\($\\([math]::Round\\(\\(Get-Item $src\\).Length/1024, 1\\)\\) KB\\)\"; python main.py $src -o \"test_files\\\\manual_test.html\" 2>&1)",
+      "PowerShell(cd d:\\\\PycharmProjects\\\\htmlGENERATOR; Write-Host \"HTML:\"; Write-Host \"  Size: $\\([math]::Round\\(\\(Get-Item test_files\\\\manual_test.html\\).Length/1024, 1\\)\\) KB\"; if \\(Test-Path test_files\\\\manual_test_files\\) { $media = Get-ChildItem test_files\\\\manual_test_files; Write-Host \"  Media files: $\\($media.Count\\)\"; $totalSize = [math]::Round\\(\\($media | Measure-Object -Property Length -Sum\\).Sum / 1024, 1\\); Write-Host \"  Media total: $totalSize KB\"; $media | Select-Object Name, @{N='Size\\(KB\\)';E={[math]::Round\\($_.Length/1024,1\\)}} | Format-Table -AutoSize })",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); Get-Command git -ErrorAction SilentlyContinue; if \\(-not $?\\) { $possiblePaths = @\\(\"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\", \"C:\\\\Program Files \\(x86\\)\\\\Git\\\\bin\\\\git.exe\", \"$env:LOCALAPPDATA\\\\Programs\\\\Git\\\\bin\\\\git.exe\"\\); foreach \\($p in $possiblePaths\\) { if \\(Test-Path $p\\) { Write-Output \"Found: $p\"; & $p --version } } })",
+      "PowerShell(Get-ChildItem \"$env:USERPROFILE\\\\.ssh\" -ErrorAction SilentlyContinue | Select-Object Name; Write-Output \"---\"; & \"D:\\\\Program Files\\\\Git\\\\cmd\\\\git.exe\" config --global --list 2>$null | Select-String -Pattern \"user|credential\")",
+      "PowerShell(& \"D:\\\\Program Files\\\\Git\\\\cmd\\\\git.exe\" config --global user.name \"1296517953\")",
+      "PowerShell(& \"D:\\\\Program Files\\\\Git\\\\cmd\\\\git.exe\" config --global user.email \"1296517953@qq.com\")",
+      "PowerShell(ssh-keygen -t ed25519 -C \"1296517953@qq.com\" -f \"$env:USERPROFILE\\\\.ssh\\\\id_ed25519\" -N '\"\"')",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"$env:USERPROFILE\\\\.ssh\"; ssh-keygen -t ed25519 -C \"1296517953@qq.com\" -f \"$env:USERPROFILE\\\\.ssh\\\\id_ed25519\" -N '\"\"')",
+      "PowerShell(ssh-keyscan -t ed25519 github.com >> \"$env:USERPROFILE\\\\.ssh\\\\known_hosts\" 2>$null; Write-Output \"GitHub host key added\")",
+      "PowerShell(Get-Content \"$env:USERPROFILE\\\\.ssh\\\\known_hosts\" -ErrorAction SilentlyContinue; Write-Output \"---\"; ssh -T git@github.com 2>&1)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit: htmlGENERATOR - PDF/DOCX to HTML converter *)",
+      "Bash(gh auth *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git pull *)"
+    ]
+  }
+}
