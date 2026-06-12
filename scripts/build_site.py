@@ -20,8 +20,13 @@ def main():
     book = _read_json(content_dir / "book.json")
     title = book.get("title", "文档")
 
+    # 若 SUMMARY.md 不存在，自动从 .md 文件的 H1-H3 标题生成
+    summary_path = content_dir / "SUMMARY.md"
+    if not summary_path.is_file():
+        _generate_summary(content_dir, summary_path)
+
     # 解析 SUMMARY.md → 导航树
-    nav = _parse_summary(content_dir / "SUMMARY.md")
+    nav = _parse_summary(summary_path)
 
     # 渲染每个 .md 文件
     md_files = list(content_dir.glob("*.md"))
@@ -48,6 +53,54 @@ def main():
     _copy_static(output_dir)
 
     print(f"\n站点已生成: {output_dir.resolve()}")
+
+
+# ═══════════════════════════════════════════════════════════════
+# SUMMARY.md 自动生成
+# ═══════════════════════════════════════════════════════════════
+
+def _generate_summary(content_dir: Path, out_path: Path):
+    """扫描所有 .md 文件的 H1-H3 标题，生成 SUMMARY.md。
+
+    链接使用与 markdown toc 扩展一致的 slugify，
+    确保锚点可正确跳转。
+    """
+    lines = ["# 目录", ""]
+    used_anchors = {}  # {base_anchor: count}
+    h1_cnt = h2_cnt = h3_cnt = 0
+    for md_file in sorted(content_dir.glob("*.md")):
+        if md_file.name in ("SUMMARY.md", "README.md"):
+            continue
+        text = md_file.read_text(encoding="utf-8")
+        headings = re.findall(r'^(#{1,3})\s+(.+?)(?:\s*\{[^}]*\})?\s*$', text, re.MULTILINE)
+        for level, title in headings:
+            title = title.strip()
+            if not title or title in ('#', '#'):
+                continue
+            indent = "  " * (len(level) - 1)
+            # 锚点用原始标题（与 HTML id 一致）
+            base = _slugify(title)
+            if base in used_anchors:
+                used_anchors[base] += 1
+                anchor = f"{base}_{used_anchors[base]}"
+            else:
+                used_anchors[base] = 0
+                anchor = base
+            # 显示文本加序号
+            if re.match(r'^[\d一二三四五六七八九十]+[\.\、\s]', title):
+                display = title
+            elif len(level) == 1:
+                h1_cnt += 1; h2_cnt = 0; h3_cnt = 0
+                prefix = _H1_NUMS[h1_cnt - 1] if h1_cnt <= len(_H1_NUMS) else str(h1_cnt)
+                display = f'{prefix}、{title}'
+            elif len(level) == 2:
+                h2_cnt += 1; h3_cnt = 0
+                display = f'{h2_cnt}. {title}'
+            else:
+                h3_cnt += 1
+                display = f'{h2_cnt}.{h3_cnt} {title}'
+            lines.append(f'{indent}- [{display}]({md_file.stem}.html#{anchor})')
+    out_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -80,10 +133,92 @@ def _parse_summary(path: Path) -> list:
 # Markdown → HTML
 # ═══════════════════════════════════════════════════════════════
 
+# 中文序号
+_H1_NUMS = "一二三四五六七八九十"
+
+
+def _add_heading_numbers_html(html: str) -> str:
+    """为 HTML 中的标题添加层级序号（保留原有 id 不变，只改展示文本）。
+
+    H1 → 一、二、三...
+    H2 → 1, 2, 3...（每个 H1 下重置）
+    H3 → 1.1, 1.2...（每个 H2 下重置）
+    """
+    h1_cnt = h2_cnt = h3_cnt = 0
+    def _number(m):
+        nonlocal h1_cnt, h2_cnt, h3_cnt
+        level = m.group(1)           # '1', '2', or '3'
+        anchor = m.group(2)          # the id value
+        text = m.group(3).strip()    # heading text
+        if not text or re.match(r'^[\d一二三四五六七八九十]+[\.\、\s]', text):
+            return m.group(0)
+        if level == '1':
+            h1_cnt += 1; h2_cnt = 0; h3_cnt = 0
+            prefix = _H1_NUMS[h1_cnt - 1] if h1_cnt <= len(_H1_NUMS) else str(h1_cnt)
+            return f'<h1 id="{anchor}">{prefix}、{text}</h1>'
+        elif level == '2':
+            h2_cnt += 1; h3_cnt = 0
+            return f'<h2 id="{anchor}">{h2_cnt}. {text}</h2>'
+        else:
+            h3_cnt += 1
+            return f'<h3 id="{anchor}">{h2_cnt}.{h3_cnt} {text}</h3>'
+    return re.sub(r'<h([123])\s+id="([^"]+)">([^<]*)</h\1>', _number, html)
+
+
+def _add_heading_numbers(text: str) -> str:
+    """为 Markdown 标题添加层级序号（仅用于 SUMMARY.md 生成）。
+
+    H1 → 一、二、三...
+    H2 → 1, 2, 3...（每个 H1 下重置）
+    H3 → 1.1, 1.2...（每个 H2 下重置）
+    已有序号前缀的标题不重复添加。
+    """
+    lines = text.split("\n")
+    result = []
+    h1_cnt = h2_cnt = h3_cnt = 0
+    for line in lines:
+        m = re.match(r'^(#{1,3})\s+(.+)$', line)
+        if m:
+            level = len(m.group(1))
+            title = m.group(2).strip()
+            # 已有序号前缀则跳过
+            if re.match(r'^[\d一二三四五六七八九十]+[\.\、\s]', title):
+                numbered = title
+            elif level == 1:
+                h1_cnt += 1; h2_cnt = 0; h3_cnt = 0
+                prefix = _H1_NUMS[h1_cnt - 1] if h1_cnt <= len(_H1_NUMS) else str(h1_cnt)
+                numbered = f"{prefix}、{title}"
+            elif level == 2:
+                h2_cnt += 1; h3_cnt = 0
+                numbered = f"{h2_cnt}. {title}"
+            elif level == 3:
+                h3_cnt += 1
+                numbered = f"{h2_cnt}.{h3_cnt} {title}"
+            result.append(f'{"#" * level} {numbered}')
+        else:
+            result.append(line)
+    return "\n".join(result)
+
+
 def _md_to_html(md_path: Path) -> str:
     import markdown
     text = md_path.read_text(encoding="utf-8")
-    return markdown.markdown(
+    # 清洗 pandoc 生成的 TOC 自引用链接
+    # [text [- N -](#anchor)](#anchor) → [text (-N-)](#anchor)
+    # pandoc 去重用 -N 后缀，但 markdown 库用 _N → 统一为 _
+    def _fix_toc_link(m):
+        body = m.group(1)
+        anchor = m.group(2)
+        body = re.sub(r'\[-\s*(\d+)\s*-', r'(-\1-)', body)
+        # pandoc 的 -N → _N，与 markdown toc 扩展一致
+        anchor = re.sub(r'-(\d+)$', r'_\1', anchor)
+        return f"[{body}](#{anchor})"
+    text = re.sub(
+        r'\[(.+)\]\(#([^)]+)\)\]\(#\2\)',
+        _fix_toc_link,
+        text, flags=re.MULTILINE
+    )
+    html = markdown.markdown(
         text,
         extensions=[
             "tables",
@@ -92,7 +227,31 @@ def _md_to_html(md_path: Path) -> str:
             "toc",
             "nl2br",
         ],
+        extension_configs={
+            "toc": {
+                "slugify": _slugify,
+            }
+        },
     )
+    # 在 HTML 层面为标题添加序号（保持 markdown 锚点 ID 不变）
+    html = _add_heading_numbers_html(html)
+    return html
+
+
+def _slugify(text: str, sep=None) -> str:
+    """自定义 ID 生成：保留中文字符，空格转连字符。
+
+    markdown toc 扩展调用时会传入 (text, separator) 两个参数。
+    """
+    # 移除标点符号（保留字母、数字、中文、空格、连字符）
+    text = re.sub(r'[^\w\s一-鿿\-]', '', text)
+    # 空格/下划线 → 连字符（忽略 toc 传入的 sep）
+    text = re.sub(r'[\s_]+', '-', text.strip())
+    # 去掉首尾连字符
+    text = text.strip('-')
+    if not text:
+        return '_'
+    return text.lower()
 
 
 def _extract_title(html: str) -> str:

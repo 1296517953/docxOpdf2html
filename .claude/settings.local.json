@@ -29,7 +29,13 @@
       "Bash(gh auth *)",
       "Bash(git remote *)",
       "Bash(git push *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(rm -rf content/SUMMARY.md content/book.json output)",
+      "Bash(mkdir -p output)",
+      "Bash(cp book.json content/)",
+      "Bash(cp -r content/media output/)",
+      "Bash(git commit -m 'Add pandoc-gitbook pipeline skill: document 8 key pitfalls *)",
+      "Bash(git commit *)"
     ]
   }
 }
